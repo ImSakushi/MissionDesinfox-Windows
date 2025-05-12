@@ -16,13 +16,11 @@ public class DisplayLevel_Bias : DisplayLevel
 
     public override void StartLevel() {
         base.StartLevel();
-
-        for (int i = 0; i < buttons.Count; i++)
-        {
-            var button = buttons[i];
-            button.uiText.text = MissionIntroDisplay.Instance.biaisTitles[i];
-            button.Hide();
+        for (int i = 0; i < buttons.Count; i++) {
+            buttons[i].uiText.text = MissionIntroDisplay.Instance.biaisTitles[i];
+            buttons[i].FadeIn();
         }
+        canPress = true;
     }
 
     public override void OnMediaDownloaded() {

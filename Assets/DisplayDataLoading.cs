@@ -20,8 +20,11 @@ public class DisplayDataLoading : Displayable
 
     public override void Start() {
         base.Start();
+        Debug.Log($"[DisplayDataLoading] Start() – debug_local = {debug_local}");
         if (debug_local) {
+            Debug.Log("[DisplayDataLoading] Mode LOCAL → j’appelle DB_Loader.Instance.Load()");
             DB_Loader.Instance.Load();
+            Debug.Log("[DisplayDataLoading] Après Load() → j’appelle Exit2()");
             Exit2();
             return;
         }
@@ -55,6 +58,7 @@ public class DisplayDataLoading : Displayable
     }
 
     void Exit2() {
+        Debug.Log("oui");
         FadeOut();
         SelectionMenu.Instance.FadeIn();
         DisplayMessage.Instance.Display(MissionIntroDisplay.Instance.gameIntroduction);

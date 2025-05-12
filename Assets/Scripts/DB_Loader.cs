@@ -4,15 +4,20 @@ using UnityEngine;
 
 public class DB_Loader : DataDownloader
 {
+
+
     public static DB_Loader Instance;
 
     private void Awake() {
         Instance = this;
+        path = "Data";
     }
 
     int lineIndex = 0;
 
     public override void GetCell(int rowIndex, List<string> cells) {
+        Debug.Log($"[CSV] Ligne {rowIndex} → {cells.Count} cellules : "
+                + string.Join(" | ", cells));
         base.GetCell(rowIndex, cells);
 
         if (sheetIndex == 4) {
@@ -86,7 +91,7 @@ public class DB_Loader : DataDownloader
 
         var lastDocument = LevelManager.Instance.levels[sheetIndex].documents.Last();
         switch (sheetIndex) {
-            // fnof
+            // FPF.csv
             case 0:
                 if (lineIndex == 0) {
                     lastDocument.medias.Add(cells[1]);
@@ -100,7 +105,7 @@ public class DB_Loader : DataDownloader
                 lastDocument.interactibleElements.Add(cells[4]);
 
                 break;
-            // HVSOP
+            // FHO.csv
             case 1:
                 lastDocument.medias.Add(cells[1]);
                 lastDocument.correctStatement = cells[2];
@@ -108,7 +113,7 @@ public class DB_Loader : DataDownloader
                 lastDocument.explanation_Bad= cells[4];
                 lastDocument.clue = cells[5];
                 break;
-                // biais
+            // LBC.csv
             case 2:
                 lastDocument.medias.Add(cells[1]);
                 lastDocument.correctStatement = cells[2];
@@ -116,7 +121,7 @@ public class DB_Loader : DataDownloader
                 lastDocument.explanation_Bad = cells[4];
                 lastDocument.clue = cells[5];
                 break;
-                // quoi croire
+            // QC.csv
             case 3:
                 for (int i = 0;i < 4; ++i) {
                     if ( lineIndex == 0)

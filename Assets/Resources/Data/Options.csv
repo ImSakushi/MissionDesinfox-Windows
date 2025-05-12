@@ -1,3 +1,89 @@
-"Nom","Document 1","Document 2","Document 3","Document 4","Explication"
-"Exemple 1","IMG_QC_Image1","IMG_QC_Image2","IMG_QC_Image3","VID_QC_Video1","Un seul contenu croise ses sources et mobilise l’avis d’un expert et d’une étude celui de Marie Claire. L’article explique que cette fausse information est liée à une mauvaise interprétation : il n’existe pas d’aliments qui soignent le cancer, mais le corossol contient des anti-oxydants qui limite le vieillissement cellulaire et donc le risque de cancer, comme beaucoup d’autres aliments."
-"","Le corossol n’est pas efficace contre le cancer","Le corossol est très un aliment très efficace pour lutter contre le cancer","Le corossol est un aliment un peu efficace comme d’autres pour lutter contre le cancer","Je n’ai pas suffisamment d’éléments pour répondre",""
+"Fake","","Rouge","E30613","","Information","Adresse mail",""
+"Fiable","","Orange","E94E1B","","Explication","education@respect-media.fr",""
+"","","Jaune","FFED00","","Hypothèse","Sujet du mail",""
+"","","Vert","3AAA35","","Opinion","Retours concernants l'application Infolympics",""
+"introduction du jeu","Infolympics souhaite muscler le cerveau et l’esprit critique des joueuses et des joueurs pour leur permettre de s’informer en confiance.
+
+<b>Parcours les différents exercices, lis les articles, regarde les vidéos et les contenus des réseaux sociaux et aide-toi de ton cerveau (littéralement) en cliquant dessus pour avoir des indices !</b>
+
+À travers l’analyse d’exemples tirés des réseaux sociaux et de sites d’information en ligne, Infolympics permet de travailler sur plusieurs compétences essentielles de l’éducation aux médias.
+
+Apprendre à penser contre soi-même en étant conscient des biais qui nous influencent, à quels éléments faut-il être attentif quand on consulte une information, quels sont les bons réflexes pour croiser ses sources, faire la différence entre un fait et une opinion : telles sont les épreuves à affronter pour développer son muscle de l’esprit critique !","","","","","",""
+"conclusion du jeu ","Bravo ! Tu as acquis énormément de compétences te permettant d’atteindre un bon niveau d'esprit critique !
+
+Mais n’oublie pas que c’est un muscle complexe, composé de différents savoir-faire et qui doit être complété par des savoir-être, il est important de penser contre soi et de toujours rester vigilant mais surtout curieux ! ","","","","","",""
+"Correlation Illusoire","<i> Le biais de corrélation illusoire </i> consiste à percevoir un lien qui n’existe pas en réalité, ou est bien plus faible qu'envisagé, entre deux évènements. Par exemple : j'ai porté ce tee-shirt quand j'ai gagné mon match de foot, donc ce tee-shirt me fait gagner au foot.
+
+Ce biais peut conduire à des conclusions erronées et à la formation de stéréotypes car il conduit à des erreurs de jugement et à des décisions basées sur des relations inexistantes ou mal comprises. 
+
+Pour le contrer, il est important de s'appuyer sur des analyses rigoureuses et de rester conscient des tendances cognitives qui peuvent influencer notre perception des données.","","","","","",""
+"Picorage","<i> Le biais de Picorage ou de cherry picking  </i> est un biais de confirmation qui consiste à ne sélectionner que des éléments qui soutiennent son point de vue tout en ignorant les preuves ou données contraires. 
+
+Reprenons l'exemple du tee-shirt : tu l'as porté à chaque fois que tu as eu une bonne note à l'école. Il est magique ! Mais tu as oublié que tu avais eu une mauvaise note quand tu le portais il y a plusieurs mois. Tu préfères te rappeler des fois où tu as eu une bonne note avec.
+
+Ce biais crée une vision biaisée et non représentative de la réalité, car l'ensemble des informations n'est pas pris en compte de manière équitable et objective.
+
+Ce biais est particulièrement problématique dans les domaines scientifiques, journalistiques et décisionnels, où une évaluation complète et impartiale des informations est cruciale.
+
+Pour le contrer, il faut toujours se demander si le contenu que je lis présente-t-il l'intégralité des données ou simplement une partie ?","","","","","",""
+"Autorité","On a tendance à surévaluer la valeur de l'opinion d'une personne que l'on considère comme ayant une autorité sur un sujet : parents, médecins, scientifiques... 
+
+<i> Le biais d’autorité </i> repose sur l'idée que les figures d’autorités sont perçues comme des sources fiables et compétentes, même lorsque ce n'est pas toujours justifié. 
+
+Par exemple, si quelqu'un de ta famille t'affirme que manger des légumes est bon pour la santé, tu auras tendance à y croire même si cette personne n'est pas médecin car tu sais qu'elle te veut du bien et tu lui fais confiance. Mais si elle te disait plutôt qu'il fallait manger des feuilles d'arbres pour être en bonne santé ?
+
+Le biais d'autorité est problématique car il peut conduire à des décisions basées sur des informations incorrectes ou biaisées. 
+
+Pour le contrer, il est important de vérifier les informations y compris provenant de sources qui semblent faire autorité et de considérer diverses perspectives avant de tirer des conclusions.","","","","","",""
+"Intentionnalité","<i> Le biais d'intentionnalité </i> est une tendance cognitive qui amène à percevoir une volonté ou une décision derrière ce qui est en réalité fortuit ou accidentel.
+
+Ce biais se manifeste par la tendance à voir des motivations et des plans derrière des actions ou des situations qui pourraient n'être que fortuites ou accidentelles.
+
+Par exemple, à chaque fois que tu sors de chez toi sans parapluie il pleut ! Est-ce que c'est le hasard ? Où est-ce qu'une sorcière t'en veut et manipule les nuages pour t'embêter ?
+
+Ce biais est problématique car il peut mener à des malentendus, à des conflits et à des perceptions erronées de la réalité.
+
+Pour le contrer il faut toujours se demander : est-ce que ce n'était pas simplement une coïncidence ? Est-ce que ce n'est pas trop compliqué qu'une personne ait volontairement voulu que cet événement arrive ?","","","","","",""
+"Opinion","Une opinion est un jugement personnel ou une croyance subjective. Elle se devine par l'emploi de verbes comme ""il faut"", ""j'estime"" et l'emploi de verbes au subjonctifs.
+
+Par exemple, une personne qui dirait : ""Pour moi, le miel de lavande a le meilleur goût"" dit simplement qu'il s'agit du miel qu'elle préfère, et pas qu'il s'agit du meilleur miel.","","","","","",""
+"Information","Une information est constituée de 4 piliers pour être considérée comme fiable : avoir un intérêt pour le public, être factuelle, être vérifiée et vérifiable, apporter quelque chose de nouveau.
+
+Par exemple, si on te dit : ""J'ai lu sur le site du Lycée Paul Michel qu'Aline a été élue hier déléguée dans la classe de terminale B."" Tu peux vérifier l'information, c'est nouveau et la personne n'a pas donné son avis sur l'élection d'Aline donc c'est bien une information !","","","","","",""
+"Explication","Une explication est un exposé détaillé destiné à rendre compréhensible un sujet ou un événement. 
+
+Parfois, on connait déjà une information mais on a besoin de mieux la comprendre. C'est pourquoi certains articles de presse se concentrent sur le fait d'expliquer quelque chose que l'on sait déjà. 
+
+Par exemple si tu lis : ""Il fait plus froid en hiver car il a été prouvé par plusieurs études que l'hiver la terre est inclinée à l'opposé du soleil"" il s'agit d'une explication car on cherche à expliquer un fait par une explication prouvée et unanimement validée.","","","","","",""
+"Hypothèse","Une hypothèse est une proposition de solution provisoire pour expliquer un phénomène. 
+
+Elle diffère de l'explication car elle n'est pas sûre, ni prouvée. Au final une hypothèse se rapproche plus de l'opinion. Il s'agit le plus souvent d'un début d'explication mais qui n'a pas été unanimement confirmé. 
+
+Par exemple, pendant longtemps l'hypothèse la plus probable était que le soleil tournait autour de la Terre. Après tout, il bougeait tout au long de la journée ! Et au final non ! Tout un tas de scientifiques ont prouvé par différentes expériences que c'est la Terre qui tourne autour du soleil, et non l'inverse.","","","","","",""
+"Niveau 1","Cette première épreuve a pour objectif d’apprendre à repérer les éléments auxquels être attentifs pour débusquer une fausse information. 
+
+Tu peux lire les articles en entier en scrollant l'image ! 
+<b>Passe ta souris sur les contenus et clique sur des éléments des textes pour t'aider grâce à des indices (ou pas) !</b>
+
+Tu peux notamment vérifier l’auteur ou l’autrice, la date, les sources citées ou non, la plateforme de diffusion…","","","","","",""
+"Niveau 2","Savoir faire la différence entre une opinion, une information, une hypothèse ou une explication est une compétence indispensable à l’esprit critique. 
+
+Dans cet exercice, on te propose de choisir si l'article ou la publication correspond à une de ces quatres réponses. 
+Tu as besoin d'un rappel sur la définition d'une opinion, une information, une hypothèse ou une explication ? Pas de problème ! 
+<b>Clique sur le signe ""?"" pour avoir sa définition.</b>
+
+Outre les réseaux sociaux, même les médias peuvent relayer une opinion. une opinion n’étant pas une information, il est facile de tomber dans le piège des fausses informations ou de se laisser influencer… 
+","","","","","",""
+"Niveau 3","Les biais cognitifs sont des réflexes de pensée qui rendent le cerveau un peu paresseux. Nous en sommes toutes et tous victimes, d'autant plus qu'il en existe des dizaines ! 
+
+Dans cette épreuve tu en auras quatre à repérer et à éliminer. Chaque contenu aura un biais qui te poussera à croire en quelque chose qui est faux ! Ton but sera d'associer chaque fausse information à son biais.
+
+Les biais sont des réactions automatiques et inconscientes. Certaines personnes en profitent pour manipuler l'information pour gagner de l'argent, de la notoriété ou parfois même sans s'en rendre compte !
+
+Choisis si l'article ou la publication correspond à un un des quatre biais. Tu ne les connais pas ? Pas de problème ! 
+<b>Clique sur le signe ""?"" pour avoir sa définition.</b> ","","","","","",""
+"Niveau 4","Pour cette dernière épreuve, maintenant que tu es armé à reconnaître une fausse information, que tu sais faire la différence entre une opinion et une information et que tu as appris à repérer différents biais, tu peux croiser différentes sources et ainsi te faire un avis éclairé : tu as presque toutes les compétences pour atteindre l’esprit critique !
+
+Dans cette épreuve on te propose différentes ressources sur un même sujet, à toi de te faire un avis sur la question…
+
+<b>Tu as quatre contenus en haut de l'écran, clique dessus pour les découvrir. Analyses les bien, et choisis entre les quatre phrases en dessous laquelle semble être l'opinion la plus raisonnable en fonction des éléments analysés. </b>","","","","","",""

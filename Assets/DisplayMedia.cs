@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
+using System.IO;
 using DG.Tweening;
 using UnityEngine.Video;
 using TMPro;
@@ -206,10 +207,33 @@ public class DisplayMedia : Displayable
     }
 
     #region video
-    void LoadVideo(string url) {
-        video_player.url = url;
+    void LoadVideo(string url)
+    {
+        video_group.SetActive(true);
+
+        // Si ce n’est pas une URL web, on cherche dans StreamingAssets
+        if (!url.StartsWith("http", StringComparison.OrdinalIgnoreCase))
+        {
+            // ex: url = "Images/FPF_video9.mp4"
+            string localPath = Path.Combine(Application.streamingAssetsPath, url);
+            
+            // Sous Windows on préfixe file:///
+            #if UNITY_EDITOR || UNITY_STANDALONE_WIN
+            localPath = "file:///" + localPath.Replace("\\", "/");
+            #endif
+
+            video_player.source = VideoSource.Url;
+            video_player.url    = localPath;
+        }
+        else
+        {
+            video_player.source = VideoSource.Url;
+            video_player.url    = url;
+        }
+
         StartCoroutine(DownloadVideoCoroutine());
     }
+
 
     IEnumerator DownloadVideoCoroutine() {
         video_player.GetComponent<RawImage>().enabled = false;
@@ -243,55 +267,61 @@ public class DisplayMedia : Displayable
 
     #region image
     void LoadImage(string url) {
-
         image_group.SetActive(true);
         image.color = Color.clear;
-        // check if video / audio / other
         StartCoroutine(DownLoadImage(url));
     }
 
     IEnumerator DownLoadImage(string url) {
-
         bool loadMask = MissionDisplay.instance.currentLevel.level.type == Level.Type.FakeInfo;
-        DisplayLoading.Instance.FadeIn();
 
-        UnityWebRequest www = UnityWebRequestTexture.GetTexture(url);
-        www.SendWebRequest();
+        // --- OFFLINE : si ce n’est pas une URL web ---
+        if (!url.StartsWith("http", StringComparison.OrdinalIgnoreCase)) {
+            // ex : "Images/FPF_Image7_M.png"
+            string withoutExt = Path.GetFileNameWithoutExtension(url);           // "FPF_Image7_M"
+            string dir        = Path.GetDirectoryName(url)?.Replace("\\","/"); // "Images"
+            // on charge depuis Resources/Data/Images/FPF_Image7_M
+            string resourcePath = $"Data/{dir}/{withoutExt}";
 
-        while (!www.isDone)
-            yield return new WaitForEndOfFrame();
-
-        Debug.Log($"Finished Downloading Image");
-
-        if (www.result != UnityWebRequest.Result.Success) {
-            Debug.Log(www.error);
-            DisplayMessage.Instance.Display($"Erreur en cherchant l'image\n{url}:\n{www.error}");
-        } else {
-            var myTexture = ((DownloadHandlerTexture)www.downloadHandler).texture;
-            if (myTexture == null) {
-                Debug.LogError($"pas de texture bug");
+            Sprite spr = Resources.Load<Sprite>(resourcePath);
+            if (spr == null) {
+                Debug.LogError($"[DisplayMedia] Sprite introuvable : Resources/{resourcePath}");
+                DisplayMessage.Instance.Display($"Image introuvable :\n{resourcePath}");
+                yield break;
             }
-            image.sprite = Sprite.Create(myTexture, new Rect(Vector2.zero, new Vector2(myTexture.width, myTexture.height)), Vector2.zero);
 
+            image.sprite = spr;
             var ar = image.GetComponent<AspectRatioFitter>();
-            ar.aspectRatio = (float)myTexture.width / myTexture.height;
+            ar.aspectRatio = (float)spr.texture.width / spr.texture.height;
+            image.SetNativeSize();
 
+            if (loadMask) {
+                string maskUrl = MissionDisplay.instance.currentLevel.GetCurrentDocument().medias[1];
+                yield return DownloadMask(maskUrl);
+            } else {
+                image.DOColor(Color.white, 0.5f);
+                Finish_Download();
+                EnableZoom();
+            }
+            yield break;
         }
 
-        /////////////
-
-        
-        using (UnityWebRequest request = UnityWebRequestTexture.GetTexture(url)) {
-            Debug.Log($"sending request");
-
-
-            yield return request.SendWebRequest();
-            yield return new WaitForEndOfFrame();
-
-           ;
+        // --- ONLINE : ton code existant pour télécharger via UnityWebRequest ---
+        DisplayLoading.Instance.FadeIn();
+        using (UnityWebRequest www = UnityWebRequestTexture.GetTexture(url)) {
+            yield return www.SendWebRequest();
+            if (www.result != UnityWebRequest.Result.Success) {
+                Debug.Log(www.error);
+                DisplayMessage.Instance.Display($"Erreur en cherchant l'image\n{url}:\n{www.error}");
+                yield break;
+            }
+            var tex = DownloadHandlerTexture.GetContent(www);
+            image.sprite = Sprite.Create(tex, new Rect(0,0,tex.width,tex.height), Vector2.zero);
+            var ar = image.GetComponent<AspectRatioFitter>();
+            ar.aspectRatio = (float)tex.width / tex.height;
+            image.SetNativeSize();
         }
 
-        image.SetNativeSize();
         if (loadMask) {
             yield return DownloadMask(MissionDisplay.instance.currentLevel.GetCurrentDocument().medias[1]);
         } else {
@@ -299,45 +329,45 @@ public class DisplayMedia : Displayable
             Finish_Download();
             EnableZoom();
         }
-
-
-
     }
     #endregion
-
     public Image maskdebug;
-
     #region mask
     IEnumerator DownloadMask(string url) {
+        Texture2D maskTex = null;
 
-        UnityWebRequest www = UnityWebRequestTexture.GetTexture(url);
-        www.SendWebRequest();
-
-        while (!www.isDone) {
-            yield return new WaitForEndOfFrame();
+        // OFFLINE ?
+        if (!url.StartsWith("http", StringComparison.OrdinalIgnoreCase)) {
+            string withoutExt   = Path.GetFileNameWithoutExtension(url);
+            string dir          = Path.GetDirectoryName(url)?.Replace("\\","/");
+            string resourcePath = $"Data/{dir}/{withoutExt}";
+            maskTex = Resources.Load<Texture2D>(resourcePath);
+            if (maskTex == null) {
+                Debug.LogError($"[DisplayMedia] Mask introuvable : Resources/{resourcePath}");
+                yield break;
+            }
+        }
+        // ONLINE
+        else {
+            using (UnityWebRequest www = UnityWebRequestTexture.GetTexture(url)) {
+                yield return www.SendWebRequest();
+                if (www.result != UnityWebRequest.Result.Success) {
+                    Debug.Log(www.error);
+                    yield break;
+                }
+                maskTex = DownloadHandlerTexture.GetContent(www);
+            }
         }
 
-        Debug.Log($"finished loading");
+        // on prépare le sprite de debug
+        maskTex.filterMode = FilterMode.Point;
+        maskdebug.sprite = Sprite.Create(maskTex,
+                                        new Rect(0,0,maskTex.width,maskTex.height),
+                                        Vector2.zero);
 
-
-        if (www.result != UnityWebRequest.Result.Success) {
-            Debug.Log(www.error);
-            DisplayMessage.Instance.Display($"Erreur en cherchant l'image\n{url}:\n{www.error}");
-        } else {
-            var mask_texture = ((DownloadHandlerTexture)www.downloadHandler).texture;
-            mask_texture.filterMode = FilterMode.Point;
-            maskdebug.sprite = Sprite.Create(mask_texture, new Rect(Vector2.zero,new Vector2(mask_texture.width, mask_texture.height)), Vector2.zero);
-
-            image.rectTransform.sizeDelta = new Vector2(image.rectTransform.sizeDelta.x, image.sprite.texture.height * image.rectTransform.rect.width / image.sprite.texture.width);
-
-            Vector2 originalResolution = new Vector2(mask_texture.width, mask_texture.height);
-
-            //Vector2 colorPixelPos = new Vector2(50, 60);
-            //Vector2 actualPixelPos = new Vector2(colorPixelPos.x * scaledResolution.x / originalResolution.x, colorPixelPos.y * scaledResolution.y / originalResolution.y);
-
-            yield return new WaitForEndOfFrame();
-            yield return CreateInteractibleElements(mask_texture);
-        }
+        // on reconstruit les interactibles
+        yield return new WaitForEndOfFrame();
+        yield return CreateInteractibleElements(maskTex);
 
         image.DOColor(Color.white, 0.5f);
         Finish_Download();

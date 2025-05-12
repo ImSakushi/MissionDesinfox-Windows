@@ -1,177 +1,235 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor;
+using System.IO;
 using UnityEngine;
 using UnityEngine.Networking;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
-public class DataDownloader : MonoBehaviour {
+public class DataDownloader : MonoBehaviour
+{
     public string linkReplace = "gviz/tq?tqx=out:csv&sheet=";
-
     public string[] sheetNames;
-
     public string sheetName;
     public int sheetIndex;
     public int row;
     public int col;
-    public string SheetToLoad = "";
+    public string sheetToLoad;
 
+    // Dictionnaire où chaque CSV est stocké sous la clé "sheetName"
     public static Dictionary<string, string> datas = new Dictionary<string, string>();
 
-    public string url;
-    public string path = @"F:\Unity Projects\Rogue Text\Assets\Resources\Items\";
+    /// <summary>
+    /// Sous-dossier dans Assets/Resources où l’on lit/écrit les CSV.
+    /// • En play → Resources.Load($"Data/{sheet}")
+    /// • En éditeur → Assets/Resources/Data/{sheet}.csv
+    /// </summary>
+    [SerializeField]
+    public string path = "Data";
 
+    public string url;
     public int lineAmount = 0;
 
     public delegate void OnFinishedLoading();
     public OnFinishedLoading onDownloadFinish;
 
-
-    public string sheetToLoad;
-    #region parse
-    public virtual void Load() {
-
-        for (int i = 0; i < sheetNames.Length; ++i) {
+    #region Parse CSV
+    public virtual void Load()
+    {
+        Debug.Log($"[DataDownloader] Load() appelé pour path='Resources/{path}' avec {sheetNames.Length} sheet(s), sheetToLoad='{sheetToLoad}'");
+        for (int i = 0; i < sheetNames.Length; ++i)
+        {
             var sheet = sheetNames[i];
             sheetIndex = i;
-            if ( !string.IsNullOrEmpty( sheetToLoad) && sheet != sheetToLoad ) { continue; }
+            Debug.Log($"[DataDownloader] → itération i={i}, sheet='{sheet}'");
 
-            var text = "";
-            if ( datas.ContainsKey( sheet )) {
-                text = datas[ sheet ];
-            } else {
-                var s = $"{path}/{sheet}";
-                var textAsset = Resources.Load(s) as TextAsset;
-                text = textAsset.text;
-
+            if (!string.IsNullOrEmpty(sheetToLoad) && sheet != sheetToLoad) {
+                Debug.Log($"[DataDownloader]    skip sheet '{sheet}' (on ne charge que '{sheetToLoad}')");
+                continue;
             }
 
-            sheetName = sheetNames[i];
+
+            string text;
+            if (datas.ContainsKey(sheet))
+            {
+                text = datas[sheet];
+            }
+            else
+            {
+                // Resources.Load ne prend pas l'extension
+                var resourcePath = $"{path}/{Path.GetFileNameWithoutExtension(sheet)}";
+                var textAsset = Resources.Load<TextAsset>(resourcePath);
+                if (textAsset == null)
+                {
+                    Debug.LogError($"CSV local non trouvé : Resources/{resourcePath}.csv");
+                    continue;
+                }
+                text = textAsset.text;
+            }
+
+            sheetName = sheet;
             lineAmount = fgCSVReader.GetLineAmount(text);
             fgCSVReader.LoadFromString(text, new fgCSVReader.ReadLineDelegate(GetCell));
         }
+        Debug.Log("[DataDownloader] Fin de Load() → appel FinishLoading()");
 
         FinishLoading();
+        
     }
 
-    public virtual void FinishLoading() {
-
+    public virtual void FinishLoading()
+    {
+        // Surchargeable
     }
 
-
-    public virtual void GetCell(int rowIndex, List<string> cells) {
+    public virtual void GetCell(int rowIndex, List<string> cells)
+    {
         row = rowIndex;
+        // Surchargeable
     }
     #endregion
 
-    public void DownloadCSVs() {
+    #region Download depuis Google Sheets
+    /// <summary>
+    /// Lance le téléchargement de tous les CSV.
+    /// </summary>
+    public void DownloadCSVs()
+    {
         _ = StartCoroutine(DownloadsCSVs());
     }
 
-    public IEnumerator DownloadsCSVs() {
-        var textAssets = Resources.LoadAll<TextAsset>(path);
-
+    /// <summary>
+    /// Coroutine interne pour télécharger tous les CSV.
+    /// </summary>
+    private IEnumerator DownloadsCSVs()
+    {
+        // Petit yield pour précharger (inutile en build)
         yield return null;
-        for (var i = 0; i < sheetNames.Length; i++) {
+
+        for (var i = 0; i < sheetNames.Length; i++)
+        {
             sheetIndex = i;
             var editIndex = url.IndexOf("edit");
-            if (editIndex != -1) {
+            if (editIndex != -1)
+            {
                 var tmpUrl = url.Remove(editIndex) + linkReplace + sheetNames[sheetIndex];
                 yield return DownloadCSV(tmpUrl, sheetNames[sheetIndex]);
-            } else {
-                Debug.LogError("no index for edit in link " + url);
+            }
+            else
+            {
+                Debug.LogError("No index for edit in link: " + url);
             }
         }
+
 #if UNITY_EDITOR
         AssetDatabase.Refresh();
-        Debug.Log($"Finished Downloading & Importing {sheetName}");
+        Debug.Log($"Finished Downloading & Importing all sheets");
 #endif
-        if (onDownloadFinish != null) {
-            onDownloadFinish();
+
+        // Log de tout le contenu pour debug
+        string allCsvLog = "";
+        foreach (var kvp in datas)
+        {
+            allCsvLog += $"=== Contenu du CSV \"{kvp.Key}\" ===\n";
+            allCsvLog += kvp.Value + "\n\n";
         }
+        Debug.Log(allCsvLog);
 
+        onDownloadFinish?.Invoke();
     }
-    public IEnumerator DownloadsCSV(int sheetIndex) {
-        yield return null;
 
+    /// <summary>
+    /// Coroutine pour télécharger un seul CSV (utilisée par l’éditeur).
+    /// </summary>
+    public IEnumerator DownloadsCSV(int sheetIndex)
+    {
         var editIndex = url.IndexOf("edit");
-        if (editIndex != -1) {
+        if (editIndex != -1)
+        {
             var tmpUrl = url.Remove(editIndex) + linkReplace + sheetNames[sheetIndex];
-            Debug.Log("Fetching " + sheetNames[sheetIndex] + "...");
             yield return DownloadCSV(tmpUrl, sheetNames[sheetIndex]);
-        } else {
-            Debug.LogError("no index for edit in link " + url);
-        }
 #if UNITY_EDITOR
-        AssetDatabase.Refresh();
-        Debug.Log($"Importing {sheetName}");
+            AssetDatabase.Refresh();
+            Debug.Log($"Importing {sheetNames[sheetIndex]}");
 #endif
+        }
+        else
+        {
+            Debug.LogError("No index for edit in link: " + url);
+        }
     }
 
-    IEnumerator DownloadCSV(string tmpUrl, string sheetName) {
+    /// <summary>
+    /// Coroutine interne pour fetch un CSV depuis tmpUrl.
+    /// </summary>
+    private IEnumerator DownloadCSV(string tmpUrl, string sheetName)
+    {
         _ = Time.realtimeSinceStartup + 10f;
-
         var www = UnityWebRequest.Get(tmpUrl);
         yield return www.SendWebRequest();
 
-        if (www.result == UnityWebRequest.Result.ConnectionError || www.result == UnityWebRequest.Result.ProtocolError) {
-            Debug.LogError("Error when requesting CSV file (responseCode:" + www.responseCode + ")");
+        if (www.result == UnityWebRequest.Result.ConnectionError ||
+            www.result == UnityWebRequest.Result.ProtocolError)
+        {
+            Debug.LogError($"Error requesting CSV (code: {www.responseCode})");
             Debug.LogError(www.error);
-        } else {
-            if (Application.isPlaying) {
-                if (datas.ContainsKey(sheetName)) {
+        }
+        else
+        {
+            if (Application.isPlaying)
+            {
+                // On garde en mémoire pour le runtime
+                if (datas.ContainsKey(sheetName))
                     datas[sheetName] = www.downloadHandler.text;
-                } else {
+                else
                     datas.Add(sheetName, www.downloadHandler.text);
-                }
-                // load from local data
-            } else {
-                var filepath = $"{Application.dataPath}/Resources/{path}/{sheetName}.csv";
-                System.IO.File.WriteAllText(filepath, www.downloadHandler.text);
-
             }
+            else
+            {
+                // En mode éditeur, on écrit dans Assets/Resources/Data/
+                var folder = Path.Combine(Application.dataPath, "Resources", path);
+                if (!Directory.Exists(folder))
+                    Directory.CreateDirectory(folder);
 
+                var filepath = Path.Combine(folder, $"{sheetName}.csv");
+                File.WriteAllText(filepath, www.downloadHandler.text);
+            }
         }
     }
+    #endregion
 
-    private static string GetCollumnName(int columnNumber) {
-
-        // To store result (Excel column name)
+    #region Helpers
+    private static string GetCollumnName(int columnNumber)
+    {
         var columnName = "";
-
-        while (columnNumber > 0) {
-
-            // Find remainder
+        while (columnNumber > 0)
+        {
             var rem = columnNumber % 26;
-
-            // If remainder is 0, then a
-            // 'Z' must be there in output
-            if (rem == 0) {
+            if (rem == 0)
+            {
                 columnName += "Z";
                 columnNumber = (columnNumber / 26) - 1;
             }
-
-            // If remainder is non-zero
-            else {
+            else
+            {
                 columnName += (char)(rem - 1 + 'A');
-                columnNumber = columnNumber / 26;
+                columnNumber /= 26;
             }
         }
-
-        // Reverse the string
-        columnName = Reverse(columnName);
-
-        // Print result
-        return columnName;
+        return Reverse(columnName);
     }
 
-    public static string Reverse(string s) {
+    public static string Reverse(string s)
+    {
         var charArray = s.ToCharArray();
         System.Array.Reverse(charArray);
         return new string(charArray);
     }
 
-    public string GetCellName(int row, int cell) {
+    public string GetCellName(int row, int cell)
+    {
         return GetCollumnName(cell) + (row + 1);
     }
-
+    #endregion
 }

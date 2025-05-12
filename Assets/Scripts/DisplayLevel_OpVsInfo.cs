@@ -30,6 +30,8 @@ public class DisplayLevel_OpVsInfo : DisplayLevel
             button.uiText.text = MissionIntroDisplay.Instance.hpTitles[i];
             button.Hide();
         }
+        OnMediaDownloaded();
+
     }
 
     public override void OnMediaDownloaded() {
